@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  1  <property name="logging.lever" value="info
+.1"/>
+    <property name="spring.application.name" value="gateway-service"/>
+    <property name="logging.maxFileSize" value="10GB"/>
+    <property name="logging.totalSizeCap" value="20GB"/>
+    <property name="logging.path" value="/data3/logs"/>
+    <property name="logging.pattern.console" value="${CONSOLE_LOG_PATTERN}"/>
+    <property name="logging.pattern.file" value="${FILE_LOG_PATTERN}"/>
+
+    <!--access生成接口请求入参和出参日志-->
+    <appender name="access" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.path}/${spring.application.name}/access.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}\t%m%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.path}/${spring.application.name}/access/access-%d{yyyy-MM-dd-HH}.%i.log
+            </fileNamePattern>
+            <maxFileSize>${logging.maxFileSize}</maxFileSize>
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>${logging.totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--每天生成统计站点日志的类-->
+    <appender name="collect" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.path}/${spring.application.name}/collect.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%m%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${logging.path}/${spring.application.name}/collect/collect-%d{yyyy-MM-dd-HH}.%i.log
+            </fileNamePattern>
+            <maxFileSize>${logging.maxFileSize}</maxFileSize>
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>${logging.totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>trace</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${logging.pattern.console}</pattern>
+        </encoder>
+    </appender>
+
+    <!--每天生成错误日志的类-->
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.path}/${spring.application.name}/error.log</file>
+        <encoder>
+            <pattern>${logging.pattern.console}</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${logging.path}/${spring.application.name}/error/error-%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <root level="${logging.level.root}">
+        <appender-ref ref="error"/>
+    </root>
+
+    <!--业务逻辑收集详细日志-->
+    <logger name="cn.gsdata.qbo.platform.gateway.filter.ProcessLogFilter" additivity="false" level="info">
+        <appender-ref ref="access"/>
+    </logger>
+    <!--业务逻辑用于统计日志-->
+    <logger name="cn.gsdata.qbo.platform.gateway.filter.ProcessLogFilter" additivity="false" level="trace">
+        <appender-ref ref="collect"/>
+    </logger>
+</configuration>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+    <contextName>clients</contextName>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <springProperty scope="context" name="root" source="logging.level.root"/>
+    <springProperty scope="context" name="application" source="spring.application.name"/>
+    <springProperty scope="context" name="maxFileSize" source="logging.maxFileSize"/>
+    <springProperty scope="context" name="totalSizeCap" source="logging.totalSizeCap"/>
+    <springProperty scope="context" name="path" source="logging.path"/>
+    <property name="logging.maxFileSize" value="${maxFileSize}"/>
+    <property name="logging.totalSizeCap" value="${totalSizeCap}"/>
+    <property name="logging.path" value="${path}"/>
+    <property name="spring.application.name" value="${application}"/>
+    <property name="logging.pattern.file" value="${FILE_LOG_PATTERN}"/>
+    <property name="logging.pattern.console" value="${CONSOLE_LOG_PATTERN}"/>
+
+    <!--debug生成接口请求入参和出参日志-->
+    <appender name="debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.path}/${spring.application.name}/all.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss}\t%m%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.path}/${spring.application.name}/all/log-all-%d{yyyy-MM-dd-HH}.%i.log
+            </fileNamePattern>
+            <maxFileSize>${logging.maxFileSize}</maxFileSize>
+            <maxHistory>3</maxHistory>
+            <totalSizeCap>${logging.totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>debug</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+
+    <!--每天生成错误日志的类-->
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logging.path}/${spring.application.name}/error.log</file>
+        <encoder>
+            <pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss}\t%m%n</pattern>
+                <charset>utf-8</charset>
+            </pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${logging.path}/${spring.application.name}/error/log-error-%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${logging.pattern.console}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="${root}">
+        <appender-ref ref="fileErrorLog"/>
+        <appender-ref ref="console"/>
+    </root>
+
+    <logger name="cn.gsdata.elasticsearchs.commons.clients.common.aop.WebLogAspect" additivity="false" level="debug">
+        <appender-ref ref="debug"/>
+    </logger>
+</configuration>

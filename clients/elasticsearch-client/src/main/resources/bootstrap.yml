@@ -1,0 +1,9 @@
+app:
+  id: elasticsearchs
+apollo:
+  meta: http://10.111.5.5:8080
+  bootstrap:
+    enabled: true
+    eagerLoad:
+      enabled: true
+    namespaces: elasticsearch-client

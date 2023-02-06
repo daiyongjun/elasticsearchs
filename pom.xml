@@ -24,7 +24,11 @@
 
     <modules>
         <module>commons</module>
-        <module>clients</module>
+<!--        <module>clients</module>-->
+        <module>coordinator</module>
+        <module>commons/elasticsearch-sql-common</module>
+        <module>sql</module>
+        <module>sql/common</module>
     </modules>
 
     <dependencyManagement>
@@ -67,22 +71,13 @@
                 <artifactId>clients-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>cn.gsdata.elasticsearchs.commons</groupId>
+                <artifactId>elasticsearch-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-                <version>3.8.0</version>
-            </plugin>
-        </plugins>
-    </build>
 
     <repositories>
         <repository>

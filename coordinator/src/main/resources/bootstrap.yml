@@ -1,0 +1,7 @@
+app:
+  id: qbo-platform
+apollo:
+  meta: http://10.111.5.5:8080
+  bootstrap:
+    enabled: true
+    namespaces: application,gateway-server
